@@ -6,6 +6,7 @@
     <title>Futuristic Tic Tac Toe | Neon Gaming</title>
     <link rel="stylesheet" href="static/css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
 </head>
 <body>
     <div class="particles-container">
@@ -16,9 +17,67 @@
         <div class="particle"></div>
     </div>
     
+    <!-- Audio Enable Toast -->
+    <div id="audio-toast" class="audio-toast hidden">
+        <div class="toast-content">
+            <span>🎵 Tap to enable sound & music</span>
+            <button id="enable-audio-btn" class="enable-audio-btn">ENABLE</button>
+        </div>
+    </div>
+    
+    <!-- Multiplayer Panel -->
+    <div id="multiplayer-panel" class="multiplayer-panel">
+        <div class="panel-header">
+            <h3>MULTIPLAYER</h3>
+            <button id="toggle-multiplayer" class="toggle-btn">📹</button>
+        </div>
+        <div id="multiplayer-content" class="panel-content hidden">
+            <div class="connection-section">
+                <div class="mode-selection">
+                    <button id="host-btn" class="mode-btn">HOST GAME</button>
+                    <button id="join-btn" class="mode-btn">JOIN GAME</button>
+                </div>
+                
+                <div id="host-section" class="connection-mode hidden">
+                    <p>Share this Room ID:</p>
+                    <div class="room-id-container">
+                        <input id="room-id-display" type="text" readonly>
+                        <button id="copy-id-btn" class="copy-btn">COPY</button>
+                    </div>
+                    <p class="status-text">Waiting for player to join...</p>
+                </div>
+                
+                <div id="join-section" class="connection-mode hidden">
+                    <input id="room-id-input" type="text" placeholder="Enter Room ID">
+                    <button id="connect-btn" class="connect-btn">CONNECT</button>
+                </div>
+            </div>
+            
+            <div class="video-section">
+                <div class="video-container">
+                    <video id="local-video" autoplay muted playsinline></video>
+                    <div class="video-label">You</div>
+                </div>
+                <div class="video-container">
+                    <video id="remote-video" autoplay playsinline></video>
+                    <div class="video-label">Opponent</div>
+                </div>
+            </div>
+            
+            <div class="media-controls">
+                <button id="toggle-video" class="media-btn">📹</button>
+                <button id="toggle-audio" class="media-btn">🎤</button>
+                <button id="disconnect-btn" class="media-btn danger">❌</button>
+            </div>
+        </div>
+    </div>
+    
     <div class="game-container">
         <header class="game-header">
             <h1 class="game-title">NEON TIC TAC TOE</h1>
+            <div class="game-mode-indicator">
+                <span id="game-mode">LOCAL GAME</span>
+            </div>
             <div class="current-player">
                 <span>Current Player:</span>
                 <span id="current-player-display" class="player-x">X</span>
@@ -91,10 +150,11 @@
     <audio id="click-sound" preload="auto">
         <source src="static/audio/click.mp3" type="audio/mpeg">
     </audio>
-    <audio id="background-music" loop>
-        <source src="static/audio/background.mp3" type="audio/mpeg">
+    <audio id="background-music" loop preload="auto">
+        <source src="https://www.soundjay.com/misc/sounds-790.mp3" type="audio/mpeg">
+        <source src="data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjQ1LjEwMAAAAAAAAAAAAAAA//tQxAADB8AhSmxhIIEVCSiJrDCQBTcu3UrAIwUdkRgQbFAZC1CQEwTJ9mjRvBA4UOLD7" type="audio/mpeg">
     </audio>
     
-    <script src="static/js/game-static.js"></script>
+    <script src="static/js/game-multiplayer.js"></script>
 </body>
 </html>
