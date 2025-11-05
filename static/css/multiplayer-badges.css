@@ -1,0 +1,35 @@
+/* Utility classes for badge overlays */
+.video-label.muted-badge {
+  right: 5px;
+  left: unset;
+  font-size: 10px;
+  padding: 3px 8px;
+  color: #fff;
+  background: var(--neon-red);
+  border-radius: 8px;
+  position: absolute;
+  bottom: 5px;
+  z-index: 2;
+}
+
+.video-label.audio-mute-badge {
+  right: 5px;
+  left: unset;
+  font-size: 10px;
+  padding: 3px 8px;
+  color: #fff;
+  background: #666;
+  border-radius: 8px;
+  position: absolute;
+  bottom: 25px;
+  z-index: 2;
+}
+
+.room-id-container .copy-icon {
+  width: 22px;
+  height: 22px;
+  fill: var(--neon-green);
+  cursor: pointer;
+  margin-left: 4px;
+  vertical-align: middle;
+}
