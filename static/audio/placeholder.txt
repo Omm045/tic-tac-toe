@@ -1,0 +1,19 @@
+Audio files would go here:
+- move.mp3 (sound for placing X or O)
+- win.mp3 (victory sound)
+- draw.mp3 (draw game sound)
+- click.mp3 (button click sound)
+- background.mp3 (ambient background music)
+
+For a real deployment, you would add actual audio files here.
+You can use free sounds from:
+- freesound.org
+- zapsplat.com
+- Adobe Stock Audio
+- YouTube Audio Library
+
+Recommended audio specifications:
+- Format: MP3
+- Bitrate: 128kbps
+- Length: 1-3 seconds for effects, loopable for background music
+- Volume: Normalized to prevent clipping
