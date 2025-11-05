@@ -38,3 +38,55 @@ canvas{border:1px solid #22283a;border-radius:8px;background:#0f1219}
 .board.sudoku-grid input.sudoku:nth-child(n+19):nth-child(-n+27),
 .board.sudoku-grid input.sudoku:nth-child(n+46):nth-child(-n+54){border-bottom-color:#3a425a}
 input.sudoku[data-hl="1"]{background:#111522}
+
+/* Sudoku given cells (non-editable clues) */
+input.sudoku.given {
+  background: #1a1f2e !important;
+  color: var(--brand) !important;
+  font-weight: 700;
+  cursor: not-allowed;
+}
+
+input.sudoku.given:hover {
+  border-color: #22283a;
+}
+
+input.sudoku.given:focus {
+  outline: none;
+}
+
+/* Mobile controls for Snake game */
+.mobile-controls {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-controls {
+    display: grid !important;
+  }
+  
+  .mobile-btn {
+    background: var(--panel) !important;
+    border: 1px solid #2b3247 !important;
+    color: var(--text) !important;
+    font-size: 20px !important;
+    min-height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .mobile-btn:active {
+    background: #1a2030 !important;
+    transform: scale(0.95);
+  }
+  
+  .mobile-btn:hover {
+    border-color: var(--brand);
+  }
+  
+  canvas {
+    max-width: 100%;
+    height: auto;
+  }
+}
