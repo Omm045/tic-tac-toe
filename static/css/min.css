@@ -29,3 +29,12 @@ body{font-family:Inter,system-ui,Segoe UI,Arial;background:var(--bg);color:var(-
 .sudoku-grid{grid-template-columns:repeat(9,1fr)}
 input.sudoku{width:100%;aspect-ratio:1/1;text-align:center;font-size:16px;border:1px solid #22283a;border-radius:6px;background:#0f1219;color:var(--text)}
 canvas{border:1px solid #22283a;border-radius:8px;background:#0f1219}
+
+/* Sudoku enhanced visuals */
+.board.sudoku-grid{gap:0}
+.board.sudoku-grid input.sudoku{border-radius:0;border:1px solid #22283a}
+.board.sudoku-grid input.sudoku:focus{outline:2px solid #2b3247}
+.board.sudoku-grid input.sudoku:nth-child(3n){border-right-color:#3a425a}
+.board.sudoku-grid input.sudoku:nth-child(n+19):nth-child(-n+27),
+.board.sudoku-grid input.sudoku:nth-child(n+46):nth-child(-n+54){border-bottom-color:#3a425a}
+input.sudoku[data-hl="1"]{background:#111522}
