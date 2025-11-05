@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="static/css/multiplayer-tweaks.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
+  <script src="static/js/peer-config.js"></script>
 </head>
 <body>
   <div class="particles-container">
@@ -16,14 +17,6 @@
     <div class="particle"></div>
     <div class="particle"></div>
     <div class="particle"></div>
-  </div>
-
-  <!-- Audio Enable Toast -->
-  <div id="audio-toast" class="audio-toast hidden">
-    <div class="toast-content">
-      <span>🎵 Tap to enable sound & music</span>
-      <button id="enable-audio-btn" class="enable-audio-btn">ENABLE</button>
-    </div>
   </div>
 
   <!-- Multiplayer Panel -->
@@ -140,22 +133,6 @@
       </div>
     </div>
   </div>
-
-  <audio id="move-sound" preload="auto">
-    <source src="static/audio/move.mp3" type="audio/mpeg" />
-  </audio>
-  <audio id="win-sound" preload="auto">
-    <source src="static/audio/win.mp3" type="audio/mpeg" />
-  </audio>
-  <audio id="draw-sound" preload="auto">
-    <source src="static/audio/draw.mp3" type="audio/mpeg" />
-  </audio>
-  <audio id="click-sound" preload="auto">
-    <source src="static/audio/click.mp3" type="audio/mpeg" />
-  </audio>
-  <audio id="background-music" loop preload="auto">
-    <source src="static/audio/background-loop.mp3" type="audio/mpeg" />
-  </audio>
 
   <script src="static/js/game-multiplayer.js"></script>
 </body>
