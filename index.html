@@ -1,160 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Futuristic Tic Tac Toe | Neon Gaming</title>
-    <link rel="stylesheet" href="static/css/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Futuristic Tic Tac Toe | Neon Gaming</title>
+  <link rel="stylesheet" href="static/css/styles.css" />
+  <link rel="stylesheet" href="static/css/multiplayer-tweaks.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
 </head>
 <body>
-    <div class="particles-container">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
+  <div class="particles-container">
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+  </div>
+
+  <!-- Audio Enable Toast -->
+  <div id="audio-toast" class="audio-toast hidden">
+    <div class="toast-content">
+      <span>🎵 Tap to enable sound & music</span>
+      <button id="enable-audio-btn" class="enable-audio-btn">ENABLE</button>
     </div>
-    
-    <!-- Audio Enable Toast -->
-    <div id="audio-toast" class="audio-toast hidden">
-        <div class="toast-content">
-            <span>🎵 Tap to enable sound & music</span>
-            <button id="enable-audio-btn" class="enable-audio-btn">ENABLE</button>
-        </div>
+  </div>
+
+  <!-- Multiplayer Panel -->
+  <div id="multiplayer-panel" class="multiplayer-panel">
+    <div class="panel-header">
+      <h3>MULTIPLAYER</h3>
+      <button id="toggle-multiplayer" class="toggle-btn">📹</button>
     </div>
-    
-    <!-- Multiplayer Panel -->
-    <div id="multiplayer-panel" class="multiplayer-panel">
-        <div class="panel-header">
-            <h3>MULTIPLAYER</h3>
-            <button id="toggle-multiplayer" class="toggle-btn">📹</button>
+    <div id="multiplayer-content" class="panel-content hidden">
+      <div class="mode-selection">
+        <button id="host-btn" class="mode-btn">HOST GAME</button>
+        <button id="join-btn" class="mode-btn">JOIN GAME</button>
+      </div>
+
+      <div id="host-section" class="connection-mode hidden">
+        <p>Share this Room Code:</p>
+        <div class="room-id-container">
+          <input id="room-id-display" type="text" readonly />
+          <button id="copy-id-btn" class="copy-btn">COPY</button>
         </div>
-        <div id="multiplayer-content" class="panel-content hidden">
-            <div class="connection-section">
-                <div class="mode-selection">
-                    <button id="host-btn" class="mode-btn">HOST GAME</button>
-                    <button id="join-btn" class="mode-btn">JOIN GAME</button>
-                </div>
-                
-                <div id="host-section" class="connection-mode hidden">
-                    <p>Share this Room ID:</p>
-                    <div class="room-id-container">
-                        <input id="room-id-display" type="text" readonly>
-                        <button id="copy-id-btn" class="copy-btn">COPY</button>
-                    </div>
-                    <p class="status-text">Waiting for player to join...</p>
-                </div>
-                
-                <div id="join-section" class="connection-mode hidden">
-                    <input id="room-id-input" type="text" placeholder="Enter Room ID">
-                    <button id="connect-btn" class="connect-btn">CONNECT</button>
-                </div>
-            </div>
-            
-            <div class="video-section">
-                <div class="video-container">
-                    <video id="local-video" autoplay muted playsinline></video>
-                    <div class="video-label">You</div>
-                </div>
-                <div class="video-container">
-                    <video id="remote-video" autoplay playsinline></video>
-                    <div class="video-label">Opponent</div>
-                </div>
-            </div>
-            
-            <div class="media-controls">
-                <button id="toggle-video" class="media-btn">📹</button>
-                <button id="toggle-audio" class="media-btn">🎤</button>
-                <button id="disconnect-btn" class="media-btn danger">❌</button>
-            </div>
+        <div class="quick-share">
+          <span>Or send a link:</span>
+          <span id="share-link" class="share-link">Copy join link</span>
         </div>
+        <p class="status-text">Waiting for player to join...</p>
+      </div>
+
+      <div id="join-section" class="connection-mode hidden">
+        <input id="room-id-input" type="text" placeholder="Enter Room Code" />
+        <button id="connect-btn" class="connect-btn">CONNECT</button>
+      </div>
+
+      <div class="video-section">
+        <div class="video-container">
+          <video id="local-video" autoplay muted playsinline></video>
+          <div class="video-label">You</div>
+        </div>
+        <div class="video-container">
+          <video id="remote-video" autoplay playsinline></video>
+          <div class="video-label">Opponent</div>
+        </div>
+      </div>
+
+      <div class="media-controls">
+        <button id="toggle-video" class="media-btn" title="Toggle video">📹</button>
+        <button id="toggle-audio" class="media-btn" title="Toggle mic">🎤</button>
+        <button id="disconnect-btn" class="media-btn danger" title="Disconnect">❌</button>
+      </div>
     </div>
-    
-    <div class="game-container">
-        <header class="game-header">
-            <h1 class="game-title">NEON TIC TAC TOE</h1>
-            <div class="game-mode-indicator">
-                <span id="game-mode">LOCAL GAME</span>
-            </div>
-            <div class="current-player">
-                <span>Current Player:</span>
-                <span id="current-player-display" class="player-x">X</span>
-            </div>
-        </header>
-        
-        <div class="scoreboard">
-            <div class="score-item">
-                <span class="score-label">Player X</span>
-                <span id="score-x" class="score-value">0</span>
-            </div>
-            <div class="score-item">
-                <span class="score-label">Draws</span>
-                <span id="score-draws" class="score-value">0</span>
-            </div>
-            <div class="score-item">
-                <span class="score-label">Player O</span>
-                <span id="score-o" class="score-value">0</span>
-            </div>
-        </div>
-        
-        <div class="game-board-container">
-            <div id="game-board" class="game-board">
-                <div class="cell" data-index="0"></div>
-                <div class="cell" data-index="1"></div>
-                <div class="cell" data-index="2"></div>
-                <div class="cell" data-index="3"></div>
-                <div class="cell" data-index="4"></div>
-                <div class="cell" data-index="5"></div>
-                <div class="cell" data-index="6"></div>
-                <div class="cell" data-index="7"></div>
-                <div class="cell" data-index="8"></div>
-            </div>
-        </div>
-        
-        <div class="game-controls">
-            <button id="restart-btn" class="control-btn">
-                <span class="btn-text">NEW GAME</span>
-                <div class="btn-glow"></div>
-            </button>
-            <button id="reset-scores-btn" class="control-btn secondary">
-                <span class="btn-text">RESET SCORES</span>
-                <div class="btn-glow"></div>
-            </button>
-        </div>
-        
-        <div id="game-status" class="game-status"></div>
+  </div>
+
+  <div class="game-container">
+    <header class="game-header">
+      <h1 class="game-title">NEON TIC TAC TOE</h1>
+      <div class="game-mode-indicator">
+        <span id="game-mode">LOCAL GAME</span>
+      </div>
+      <div class="current-player">
+        <span>Current Player:</span>
+        <span id="current-player-display" class="player-x">X</span>
+      </div>
+    </header>
+
+    <div class="scoreboard">
+      <div class="score-item">
+        <span class="score-label">Player X</span>
+        <span id="score-x" class="score-value">0</span>
+      </div>
+      <div class="score-item">
+        <span class="score-label">Draws</span>
+        <span id="score-draws" class="score-value">0</span>
+      </div>
+      <div class="score-item">
+        <span class="score-label">Player O</span>
+        <span id="score-o" class="score-value">0</span>
+      </div>
     </div>
-    
-    <div id="victory-overlay" class="victory-overlay">
-        <div class="victory-content">
-            <h2 id="victory-text" class="victory-text"></h2>
-            <div class="victory-animation">
-                <div class="victory-circle"></div>
-                <div class="victory-circle"></div>
-                <div class="victory-circle"></div>
-            </div>
-        </div>
+
+    <div class="game-board-container">
+      <div id="game-board" class="game-board">
+        <div class="cell" data-index="0"></div>
+        <div class="cell" data-index="1"></div>
+        <div class="cell" data-index="2"></div>
+        <div class="cell" data-index="3"></div>
+        <div class="cell" data-index="4"></div>
+        <div class="cell" data-index="5"></div>
+        <div class="cell" data-index="6"></div>
+        <div class="cell" data-index="7"></div>
+        <div class="cell" data-index="8"></div>
+      </div>
     </div>
-    
-    <audio id="move-sound" preload="auto">
-        <source src="static/audio/move.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="win-sound" preload="auto">
-        <source src="static/audio/win.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="draw-sound" preload="auto">
-        <source src="static/audio/draw.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="click-sound" preload="auto">
-        <source src="static/audio/click.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="background-music" loop preload="auto">
-        <source src="https://www.soundjay.com/misc/sounds-790.mp3" type="audio/mpeg">
-        <source src="data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjQ1LjEwMAAAAAAAAAAAAAAA//tQxAADB8AhSmxhIIEVCSiJrDCQBTcu3UrAIwUdkRgQbFAZC1CQEwTJ9mjRvBA4UOLD7" type="audio/mpeg">
-    </audio>
-    
-    <script src="static/js/game-multiplayer.js"></script>
+
+    <div class="game-controls">
+      <button id="restart-btn" class="control-btn">
+        <span class="btn-text">NEW GAME</span>
+        <div class="btn-glow"></div>
+      </button>
+      <button id="reset-scores-btn" class="control-btn secondary">
+        <span class="btn-text">RESET SCORES</span>
+        <div class="btn-glow"></div>
+      </button>
+    </div>
+
+    <div id="game-status" class="game-status"></div>
+  </div>
+
+  <div id="victory-overlay" class="victory-overlay">
+    <div class="victory-content">
+      <h2 id="victory-text" class="victory-text"></h2>
+      <div class="victory-animation">
+        <div class="victory-circle"></div>
+        <div class="victory-circle"></div>
+        <div class="victory-circle"></div>
+      </div>
+    </div>
+  </div>
+
+  <audio id="move-sound" preload="auto">
+    <source src="static/audio/move.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="win-sound" preload="auto">
+    <source src="static/audio/win.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="draw-sound" preload="auto">
+    <source src="static/audio/draw.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="click-sound" preload="auto">
+    <source src="static/audio/click.mp3" type="audio/mpeg" />
+  </audio>
+  <audio id="background-music" loop preload="auto">
+    <source src="static/audio/background-loop.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script src="static/js/game-multiplayer.js"></script>
 </body>
 </html>
