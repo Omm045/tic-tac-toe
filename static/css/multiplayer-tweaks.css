@@ -1,0 +1,39 @@
+/* Audio Toast */
+.audio-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: var(--glass-bg); border: 2px solid var(--neon-blue); border-radius: 14px; padding: 10px 12px; backdrop-filter: blur(10px); z-index: 10000; animation: slideDown 0.3s ease-out; box-shadow: 0 8px 30px rgba(0,255,255,.15) }
+.audio-toast.hidden { display: none }
+.toast-content { display: flex; align-items: center; gap: 10px; color: white; font-size: 13px }
+.enable-audio-btn { background: var(--neon-blue); color: #000; border: 0; padding: 6px 10px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: .2s; font-family: 'Orbitron', monospace }
+.enable-audio-btn:hover { transform: translateY(-1px); box-shadow: 0 0 12px var(--neon-blue) }
+@keyframes slideDown { from { opacity: 0; transform: translateX(-50%) translateY(-30px) } to { opacity: 1; transform: translateX(-50%) translateY(0) } }
+
+/* Multiplayer Panel – simplified */
+.multiplayer-panel { position: fixed; top: 16px; right: 16px; background: var(--glass-bg); border: 1px solid var(--border-glow); border-radius: 14px; backdrop-filter: blur(10px); z-index: 1000; width: 360px; max-width: calc(100% - 32px) }
+.panel-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--border-glow) }
+.panel-header h3 { color: var(--neon-purple); font-size: 14px; margin: 0; letter-spacing: 1px }
+.toggle-btn { background: transparent; border: 1px solid var(--neon-purple); color: var(--neon-purple); width: 32px; height: 32px; border-radius: 10px; cursor: pointer; font-size: 14px; transition: .2s }
+.toggle-btn:hover { background: var(--neon-purple); color: #000 }
+.panel-content { padding: 12px }
+.panel-content.hidden { display: none }
+.mode-selection { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px }
+.mode-btn { padding: 8px 10px; background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue); border-radius: 10px; cursor: pointer; font-family: 'Orbitron', monospace; font-weight: 700; font-size: 11px; transition: .2s }
+.mode-btn:hover, .mode-btn.active { background: var(--neon-blue); color: #000; box-shadow: 0 0 12px var(--neon-blue) }
+.connection-mode { margin-bottom: 10px }
+.connection-mode.hidden { display: none }
+.room-id-container { display: grid; grid-template-columns: 1fr auto; gap: 6px; margin: 6px 0 }
+#room-id-display, #room-id-input { padding: 8px 10px; background: rgba(0,0,0,.35); border: 1px solid var(--border-glow); border-radius: 10px; color: #fff; font-family: 'Orbitron', monospace; font-size: 12px }
+.copy-btn, .connect-btn { padding: 8px 12px; background: var(--neon-green); color: #000; border: 0; border-radius: 10px; cursor: pointer; font-family: 'Orbitron', monospace; font-weight: 700; font-size: 11px; transition: .2s }
+.copy-btn:hover, .connect-btn:hover { transform: translateY(-1px); box-shadow: 0 0 12px var(--neon-green) }
+.quick-share { display:flex; align-items:center; gap:8px; font-size:11px; color:#b0f5b0 }
+.share-link { color: var(--neon-green); text-decoration: underline; cursor: pointer }
+.video-section { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px }
+.video-container { position: relative; background: rgba(0,0,0,.5); border: 1px solid var(--border-glow); border-radius: 10px; overflow: hidden; aspect-ratio: 4/3 }
+.video-container video { width: 100%; height: 100%; object-fit: cover }
+.video-label { position: absolute; bottom: 5px; left: 5px; background: rgba(0,0,0,.8); padding: 3px 7px; border-radius: 6px; font-size: 10px; color: var(--neon-blue) }
+.media-controls { display: flex; justify-content: center; gap: 8px }
+.media-btn { width: 36px; height: 36px; border: 1px solid var(--neon-blue); background: transparent; color: var(--neon-blue); border-radius: 10px; cursor: pointer; font-size: 14px; transition: .2s }
+.media-btn:hover { background: var(--neon-blue); color: #000 }
+.media-btn.danger { border-color: var(--neon-red); color: var(--neon-red) }
+.media-btn.danger:hover { background: var(--neon-red); color: #fff }
+.media-btn.muted { background: var(--neon-red); color:#fff; border-color: var(--neon-red) }
+
+@media (max-width: 480px) {.video-section { grid-template-columns: 1fr }}
