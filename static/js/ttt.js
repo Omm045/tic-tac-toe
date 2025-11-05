@@ -1,11 +1,10 @@
-// Minimal Tic Tac Toe with modes: local, bot-easy, bot-hard, ultimate
+// Minimal Tic Tac Toe with modes: local, bot-easy, bot-hard
 (function(){
   const boardEl = document.getElementById('board');
   const statusEl = document.getElementById('status');
   const modeSel = document.getElementById('mode');
   const modeBadge = document.getElementById('mode-badge');
   const newBtn = document.getElementById('new');
-  const ultimateWrap = document.getElementById('ultimate-wrap');
 
   let mode = 'local';
   let board = Array(9).fill('');
@@ -16,9 +15,8 @@
   const winner = (b)=>{ for(const w of wins){ const [a,c,d]=w; if(b[a] && b[a]===b[c] && b[c]===b[d]) return b[a]; } return b.every(v=>v)?'draw':null; };
 
   function render(){
-    modeBadge.textContent = 'Mode: ' + (mode==='local'?'Local':mode==='bot-easy'?'Bot Easy':mode==='bot-hard'?'Bot Hard':'Ultimate');
+    modeBadge.textContent = 'Mode: ' + (mode==='local'?'Local':mode==='bot-easy'?'Bot Easy':'Bot Hard');
     statusEl.textContent = over? (winner(board)==='draw'?'Draw':`Winner ${winner(board)}`) : `Player ${cur} turn`;
-    if(mode==='ultimate') { renderUltimate(); return; }
     boardEl.innerHTML=''; boardEl.className='board grid-3';
     board.forEach((v,i)=>{
       const c=document.createElement('div'); c.className='cell'; c.style.aspectRatio='1/1'; c.textContent=v; c.onclick=()=>move(i);
@@ -34,30 +32,13 @@
     let best=-1e9, bestMove=null;
     for(const i of empty){ board[i]='O'; const score=minimax(board,false); board[i]=''; if(score>best){ best=score; bestMove=i; } }
     move(bestMove);
-  }, 200); }
+  }, 160); }
 
   function minimax(b, isMax){ const w=winner(b); if(w==='O') return 10; if(w==='X') return -10; if(w==='draw') return 0; const empty=b.map((v,i)=>v?null:i).filter(v=>v!==null); let best=isMax?-1e9:1e9; for(const i of empty){ b[i]= isMax?'O':'X'; const val=minimax(b,!isMax); b[i]=''; best= isMax? Math.max(best,val): Math.min(best,val); } return best; }
 
   function reset(){ board=Array(9).fill(''); cur='X'; over=false; render(); }
 
-  function renderUltimate(){
-    ultimateWrap.style.display='grid'; ultimateWrap.style.gridTemplateColumns='repeat(3,1fr)'; ultimateWrap.innerHTML=''; boardEl.innerHTML='';
-    // 9 boards
-    for(let g=0; g<9; g++){
-      const sub = document.createElement('div'); sub.className='board grid-3';
-      const b = Array(9).fill('');
-      sub.dataset.index=g;
-      for(let i=0;i<9;i++){
-        const c=document.createElement('div'); c.className='cell'; c.style.aspectRatio='1/1'; c.onclick=()=>{
-          if(over||b[i])return; b[i]=cur; const w=winner(b); if(w){ sub.dataset.winner=w; sub.style.borderColor = '#2b9'; }
-          cur = cur==='X'?'O':'X';
-        }; sub.appendChild(c);
-      }
-      ultimateWrap.appendChild(sub);
-    }
-  }
-
-  modeSel.onchange=()=>{ mode=modeSel.value; ultimateWrap.style.display='none'; reset(); };
+  modeSel.onchange=()=>{ mode=modeSel.value; reset(); };
   newBtn.onclick=reset;
   render();
 })();
