@@ -45,7 +45,78 @@ class TicTacToeGame {
             if (e.key === 'Escape') {
                 this.hideVictoryOverlay();
             }
+            if (e.key === 'm' || e.key === 'M') {
+                this.toggleSound();
+            }
         });
+        
+        // Add sound toggle button listener
+        this.createSoundToggle();
+    }
+    
+    createSoundToggle() {
+        const soundToggle = document.createElement('button');
+        soundToggle.id = 'sound-toggle';
+        soundToggle.className = 'sound-toggle';
+        soundToggle.innerHTML = '🔊';
+        soundToggle.title = 'Toggle Sound (M)';
+        soundToggle.addEventListener('click', () => this.toggleSound());
+        
+        // Add styles for sound toggle
+        const style = document.createElement('style');
+        style.textContent = `
+            .sound-toggle {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                border: 2px solid var(--neon-blue);
+                background: rgba(0, 0, 0, 0.8);
+                color: white;
+                border-radius: 50%;
+                font-size: 20px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+                z-index: 1000;
+            }
+            .sound-toggle:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px var(--neon-blue);
+            }
+            .sound-toggle.muted {
+                border-color: #666;
+                color: #666;
+            }
+        `;
+        document.head.appendChild(style);
+        document.body.appendChild(soundToggle);
+    }
+    
+    toggleSound() {
+        this.soundEnabled = !this.soundEnabled;
+        const toggle = document.getElementById('sound-toggle');
+        
+        if (this.soundEnabled) {
+            toggle.innerHTML = '🔊';
+            toggle.classList.remove('muted');
+            toggle.title = 'Turn Sound Off (M)';
+            // Resume background music if it was playing
+            if (this.sounds.background && this.sounds.background.paused) {
+                this.sounds.background.play().catch(e => console.log('Background music play failed:', e));
+            }
+        } else {
+            toggle.innerHTML = '🔇';
+            toggle.classList.add('muted');
+            toggle.title = 'Turn Sound On (M)';
+            // Pause background music
+            if (this.sounds.background && !this.sounds.background.paused) {
+                this.sounds.background.pause();
+            }
+        }
+        
+        this.showStatus(this.soundEnabled ? 'Sound ON' : 'Sound OFF', 'info');
     }
     
     initializeAudio() {
@@ -57,29 +128,81 @@ class TicTacToeGame {
             background: document.getElementById('background-music')
         };
         
-        // Set volumes
-        Object.values(this.sounds).forEach(sound => {
+        // Set volumes and configure audio
+        Object.entries(this.sounds).forEach(([key, sound]) => {
             if (sound) {
-                sound.volume = 0.3;
+                if (key === 'background') {
+                    sound.volume = 0.1;
+                    sound.loop = true;
+                } else {
+                    sound.volume = 0.4;
+                }
+                
+                // Add error handling
+                sound.addEventListener('error', (e) => {
+                    console.log(`Audio error for ${key}:`, e);
+                });
             }
         });
         
-        // Start background music
-        if (this.sounds.background) {
-            this.sounds.background.volume = 0.1;
-            // Auto-play with user interaction
-            document.addEventListener('click', () => {
-                if (this.sounds.background.paused) {
-                    this.sounds.background.play().catch(e => console.log('Audio play failed:', e));
-                }
-            }, { once: true });
-        }
+        // Start background music on first user interaction
+        this.backgroundMusicStarted = false;
+        document.addEventListener('click', () => {
+            if (!this.backgroundMusicStarted && this.sounds.background && this.soundEnabled) {
+                this.sounds.background.play().catch(e => console.log('Background music play failed:', e));
+                this.backgroundMusicStarted = true;
+            }
+        }, { once: true });
     }
     
     playSound(soundName) {
         if (this.soundEnabled && this.sounds[soundName]) {
+            // Reset audio to beginning and play
             this.sounds[soundName].currentTime = 0;
-            this.sounds[soundName].play().catch(e => console.log('Sound play failed:', e));
+            this.sounds[soundName].play().catch(e => {
+                console.log(`Sound play failed for ${soundName}:`, e);
+                // Create backup sound effect using Web Audio API
+                this.createBackupSound(soundName);
+            });
+        }
+    }
+    
+    createBackupSound(soundType) {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Different sound patterns for different actions
+            switch(soundType) {
+                case 'move':
+                    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+                    break;
+                case 'win':
+                    oscillator.frequency.setValueAtTime(523, audioContext.currentTime);
+                    oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1);
+                    oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2);
+                    break;
+                case 'draw':
+                    oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+                    break;
+                case 'click':
+                    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.05);
+                    break;
+            }
+            
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        } catch (e) {
+            console.log('Backup sound creation failed:', e);
         }
     }
     
@@ -114,6 +237,7 @@ class TicTacToeGame {
             if (response.ok) {
                 this.gameState = await response.json();
                 this.playSound('move');
+                this.animateMove(cell);
                 this.updateUI();
                 
                 if (this.gameState.game_over) {
@@ -127,6 +251,21 @@ class TicTacToeGame {
             console.error('Error making move:', error);
             this.showStatus('Connection error. Please try again.', 'error');
         }
+    }
+    
+    animateMove(cell) {
+        // Add special animation for move placement
+        cell.style.transform = 'scale(0.8)';
+        cell.style.opacity = '0.5';
+        
+        setTimeout(() => {
+            cell.style.transform = 'scale(1.1)';
+            cell.style.opacity = '1';
+            
+            setTimeout(() => {
+                cell.style.transform = 'scale(1)';
+            }, 100);
+        }, 50);
     }
     
     async restartGame() {
@@ -172,27 +311,38 @@ class TicTacToeGame {
     updateUI() {
         if (!this.gameState) return;
         
-        // Update board
+        // Update board with smooth transitions
         this.cells.forEach((cell, index) => {
             const value = this.gameState.board[index];
-            cell.textContent = value;
-            cell.className = 'cell';
+            const oldValue = cell.textContent;
             
-            if (value === 'X') {
-                cell.classList.add('x');
-            } else if (value === 'O') {
-                cell.classList.add('o');
+            if (oldValue !== value) {
+                cell.textContent = value;
+                cell.className = 'cell';
+                
+                if (value === 'X') {
+                    cell.classList.add('x');
+                } else if (value === 'O') {
+                    cell.classList.add('o');
+                }
             }
         });
         
-        // Update current player
-        this.currentPlayerDisplay.textContent = this.gameState.current_player;
-        this.currentPlayerDisplay.className = this.gameState.current_player === 'X' ? 'player-x' : 'player-o';
+        // Update current player with transition
+        const newPlayer = this.gameState.current_player;
+        if (this.currentPlayerDisplay.textContent !== newPlayer) {
+            this.currentPlayerDisplay.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                this.currentPlayerDisplay.textContent = newPlayer;
+                this.currentPlayerDisplay.className = newPlayer === 'X' ? 'player-x' : 'player-o';
+                this.currentPlayerDisplay.style.transform = 'scale(1)';
+            }, 150);
+        }
         
-        // Update scores
-        this.scoreX.textContent = this.gameState.scores.X;
-        this.scoreO.textContent = this.gameState.scores.O;
-        this.scoreDraws.textContent = this.gameState.scores.draws;
+        // Update scores with animations
+        this.animateScoreUpdate('score-x', this.gameState.scores.X);
+        this.animateScoreUpdate('score-o', this.gameState.scores.O);
+        this.animateScoreUpdate('score-draws', this.gameState.scores.draws);
         
         // Highlight winning cells
         if (this.gameState.winning_line) {
@@ -213,6 +363,21 @@ class TicTacToeGame {
         }
     }
     
+    animateScoreUpdate(elementId, newValue) {
+        const element = document.getElementById(elementId);
+        const currentValue = parseInt(element.textContent);
+        
+        if (currentValue !== newValue) {
+            element.style.transform = 'scale(1.5)';
+            element.style.color = 'var(--neon-green)';
+            
+            setTimeout(() => {
+                element.textContent = newValue;
+                element.style.transform = 'scale(1)';
+            }, 200);
+        }
+    }
+    
     handleGameEnd() {
         this.isGameActive = false;
         
@@ -223,18 +388,65 @@ class TicTacToeGame {
             } else {
                 this.playSound('win');
                 this.showVictoryOverlay(`PLAYER ${this.gameState.winner} WINS!`);
+                this.createFireworks();
             }
         }, 1000);
+    }
+    
+    createFireworks() {
+        // Create celebratory particle effect
+        for (let i = 0; i < 20; i++) {
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            firework.style.cssText = `
+                position: fixed;
+                width: 4px;
+                height: 4px;
+                background: var(--neon-green);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 10000;
+                left: ${Math.random() * window.innerWidth}px;
+                top: ${Math.random() * window.innerHeight}px;
+                box-shadow: 0 0 10px var(--neon-green);
+                animation: firework ${1 + Math.random()}s ease-out forwards;
+            `;
+            
+            document.body.appendChild(firework);
+            
+            setTimeout(() => {
+                firework.remove();
+            }, 2000);
+        }
+        
+        // Add firework animation if not exists
+        if (!document.getElementById('firework-styles')) {
+            const style = document.createElement('style');
+            style.id = 'firework-styles';
+            style.textContent = `
+                @keyframes firework {
+                    0% {
+                        transform: scale(0) rotate(0deg);
+                        opacity: 1;
+                    }
+                    100% {
+                        transform: scale(3) rotate(360deg);
+                        opacity: 0;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
     }
     
     showVictoryOverlay(message) {
         this.victoryText.textContent = message;
         this.victoryOverlay.classList.add('show');
         
-        // Auto-hide after 3 seconds
+        // Auto-hide after 4 seconds
         setTimeout(() => {
             this.hideVictoryOverlay();
-        }, 3000);
+        }, 4000);
     }
     
     hideVictoryOverlay() {
@@ -261,19 +473,19 @@ document.addEventListener('DOMContentLoaded', () => {
     new TicTacToeGame();
 });
 
-// Add some interactive effects
+// Add interactive particle effects
 document.addEventListener('mousemove', (e) => {
     const particles = document.querySelectorAll('.particle');
     particles.forEach((particle, index) => {
-        const speed = (index + 1) * 0.01;
-        const x = e.clientX * speed;
-        const y = e.clientY * speed;
+        const speed = (index + 1) * 0.005;
+        const x = (e.clientX - window.innerWidth / 2) * speed;
+        const y = (e.clientY - window.innerHeight / 2) * speed;
         
         particle.style.transform = `translate(${x}px, ${y}px)`;
     });
 });
 
-// Add keyboard navigation
+// Add keyboard navigation for cells
 document.addEventListener('keydown', (e) => {
     if (e.key >= '1' && e.key <= '9') {
         const position = parseInt(e.key) - 1;
@@ -281,5 +493,74 @@ document.addEventListener('keydown', (e) => {
         if (cell) {
             cell.click();
         }
+    }
+});
+
+// Add visual feedback for keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+    const key = e.key.toLowerCase();
+    let message = '';
+    
+    switch(key) {
+        case 'r':
+            message = 'Restart Game (R pressed)';
+            break;
+        case 'm':
+            message = 'Toggle Sound (M pressed)';
+            break;
+        case 'escape':
+            message = 'Close Overlay (ESC pressed)';
+            break;
+    }
+    
+    if (message) {
+        const keyFeedback = document.createElement('div');
+        keyFeedback.style.cssText = `
+            position: fixed;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 255, 255, 0.9);
+            color: black;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10000;
+            animation: keyFeedback 2s ease-out forwards;
+        `;
+        keyFeedback.textContent = message;
+        document.body.appendChild(keyFeedback);
+        
+        // Add animation if not exists
+        if (!document.getElementById('key-feedback-styles')) {
+            const style = document.createElement('style');
+            style.id = 'key-feedback-styles';
+            style.textContent = `
+                @keyframes keyFeedback {
+                    0% {
+                        opacity: 0;
+                        transform: translateX(-50%) translateY(-20px);
+                    }
+                    20% {
+                        opacity: 1;
+                        transform: translateX(-50%) translateY(0);
+                    }
+                    80% {
+                        opacity: 1;
+                        transform: translateX(-50%) translateY(0);
+                    }
+                    100% {
+                        opacity: 0;
+                        transform: translateX(-50%) translateY(-20px);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        setTimeout(() => {
+            keyFeedback.remove();
+        }, 2000);
     }
 });
