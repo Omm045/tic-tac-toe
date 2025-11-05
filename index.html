@@ -3,147 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Futuristic Tic Tac Toe | Neon Gaming</title>
-  <link rel="stylesheet" href="static/css/styles.css" />
-  <link rel="stylesheet" href="static/css/multiplayer-tweaks.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/peerjs@1.5.1/dist/peerjs.min.js"></script>
-  <script src="static/js/peer-config.js"></script>
+  <title>Playground</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="static/css/min.css" />
 </head>
 <body>
-  <div class="particles-container">
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-    <div class="particle"></div>
-  </div>
+  <header class="topbar">
+    <h1 class="brand">Playground</h1>
+  </header>
 
-  <!-- Multiplayer Panel (Chat-focused) -->
-  <div id="multiplayer-panel" class="multiplayer-panel">
-    <div class="panel-header">
-      <h3>MULTIPLAYER</h3>
-      <button id="toggle-multiplayer" class="toggle-btn">💬</button>
-    </div>
-    <div id="multiplayer-content" class="panel-content hidden">
-      
-      <!-- Quick Start Section -->
-      <div id="quick-start" class="quick-start">
-        <button id="create-room-btn" class="create-room-btn">CREATE ROOM & COPY LINK</button>
-        <div class="or-divider">OR</div>
-        <input id="quick-join-input" type="text" placeholder="Paste room link or code" />
-        <button id="quick-join-btn" class="quick-join-btn">JOIN</button>
-      </div>
+  <main class="container">
+    <section class="games">
+      <a class="card" href="/tic-tac-toe.html">
+        <h3>Tic Tac Toe</h3>
+        <p>Classic 3×3 with fun modes</p>
+      </a>
+      <a class="card" href="/snake.html">
+        <h3>Snake</h3>
+        <p>Grow the snake, avoid walls</p>
+      </a>
+      <a class="card" href="/sudoku.html">
+        <h3>Sudoku</h3>
+        <p>Daily 9×9 puzzle generator</p>
+      </a>
+    </section>
+  </main>
 
-      <!-- Advanced Section -->
-      <div id="advanced-section" class="advanced-section hidden">
-        <div class="mode-selection">
-          <button id="host-btn" class="mode-btn">HOST GAME</button>
-          <button id="join-btn" class="mode-btn">JOIN GAME</button>
-        </div>
-
-        <div id="host-section" class="connection-mode hidden">
-          <p>Share this Room Code:</p>
-          <div class="room-id-container">
-            <input id="room-id-display" type="text" readonly />
-            <button id="copy-id-btn" class="copy-btn">COPY</button>
-          </div>
-          <div class="quick-share">
-            <span>Or send a link:</span>
-            <span id="share-link" class="share-link">Copy join link</span>
-          </div>
-          <p class="status-text">Waiting for player to join...</p>
-        </div>
-
-        <div id="join-section" class="connection-mode hidden">
-          <input id="room-id-input" type="text" placeholder="Enter Room Code" />
-          <button id="connect-btn" class="connect-btn">CONNECT</button>
-        </div>
-      </div>
-
-      <!-- Simple Chat -->
-      <div id="chat-box" style="display:none; margin-top:15px;">
-        <div id="chat-log" style="height:120px; overflow:auto; background:rgba(0,0,0,.4); border:1px solid var(--border-glow); border-radius:10px; padding:10px; font-size:12px; margin-bottom:8px;"></div>
-        <div style="display:flex; gap:8px;">
-          <input id="chat-input" type="text" placeholder="Type a message..." style="flex:1; padding:8px; background:rgba(0,0,0,.35); border:1px solid var(--border-glow); border-radius:8px; color:#fff; font-family:Orbitron, monospace; font-size:12px;" />
-          <button id="chat-send" class="connect-btn" style="padding:8px 12px;">SEND</button>
-        </div>
-      </div>
-      
-      <div class="disconnect-section" style="margin-top:10px; text-align:center;">
-        <button id="disconnect-btn" class="media-btn danger" style="border-radius:8px; padding:8px 16px; width:auto;">DISCONNECT</button>
-      </div>
-      
-    </div>
-  </div>
-
-  <div class="game-container">
-    <header class="game-header">
-      <h1 class="game-title">NEON TIC TAC TOE</h1>
-      <div class="game-mode-indicator">
-        <span id="game-mode">LOCAL GAME</span>
-      </div>
-      <div class="current-player">
-        <span>Current Player:</span>
-        <span id="current-player-display" class="player-x">X</span>
-      </div>
-    </header>
-
-    <div class="scoreboard">
-      <div class="score-item">
-        <span class="score-label">Player X</span>
-        <span id="score-x" class="score-value">0</span>
-      </div>
-      <div class="score-item">
-        <span class="score-label">Draws</span>
-        <span id="score-draws" class="score-value">0</span>
-      </div>
-      <div class="score-item">
-        <span class="score-label">Player O</span>
-        <span id="score-o" class="score-value">0</span>
-      </div>
-    </div>
-
-    <div class="game-board-container">
-      <div id="game-board" class="game-board">
-        <div class="cell" data-index="0"></div>
-        <div class="cell" data-index="1"></div>
-        <div class="cell" data-index="2"></div>
-        <div class="cell" data-index="3"></div>
-        <div class="cell" data-index="4"></div>
-        <div class="cell" data-index="5"></div>
-        <div class="cell" data-index="6"></div>
-        <div class="cell" data-index="7"></div>
-        <div class="cell" data-index="8"></div>
-      </div>
-    </div>
-
-    <div class="game-controls">
-      <button id="restart-btn" class="control-btn">
-        <span class="btn-text">NEW GAME</span>
-        <div class="btn-glow"></div>
-      </button>
-      <button id="reset-scores-btn" class="control-btn secondary">
-        <span class="btn-text">RESET SCORES</span>
-        <div class="btn-glow"></div>
-      </button>
-    </div>
-
-    <div id="game-status" class="game-status"></div>
-  </div>
-
-  <div id="victory-overlay" class="victory-overlay">
-    <div class="victory-content">
-      <h2 id="victory-text" class="victory-text"></h2>
-      <div class="victory-animation">
-        <div class="victory-circle"></div>
-        <div class="victory-circle"></div>
-        <div class="victory-circle"></div>
-      </div>
-    </div>
-  </div>
-
-  <script src="static/js/rtc-status.js"></script>
-  <script src="static/js/game-multiplayer.js"></script>
+  <footer class="foot">Have fun.</footer>
 </body>
 </html>
